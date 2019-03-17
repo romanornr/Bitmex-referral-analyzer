@@ -154,9 +154,8 @@ func calculateTotalReferral(transactions []Transaction) {
 		date := strings.Split(time[0], "/")
 		month, _ := strconv.Atoi(date[0])
 
-		mm := [12]Month{monthly.Jan, monthly.Feb, monthly.Mar, monthly.Apr, monthly.May, monthly.Jun, monthly.Jul, monthly.Aug, monthly.Sept, monthly.Oct, monthly.Nov, monthly.Dec}
-
-		for index, _ := range mm {
+		months := [12]Month{monthly.Jan, monthly.Feb, monthly.Mar, monthly.Apr, monthly.May, monthly.Jun, monthly.Jul, monthly.Aug, monthly.Sept, monthly.Oct, monthly.Nov, monthly.Dec}
+		for index, _ := range months {
 			switch month {
 			case index:
 				monthlyTransactions[month-1] = append(monthlyTransactions[month-1], tx)
@@ -164,11 +163,10 @@ func calculateTotalReferral(transactions []Transaction) {
 		}
 	}
 
-	monthly.Jan, monthly.Feb, monthly.Mar, monthly.Apr, monthly.May, monthly.Jun, monthly.Jul, monthly.Aug, monthly.Sept, monthly.Oct, monthly.Nov, monthly.Dec = JAN, FEB, MAR, APR, MAY, JUN, JUL, AUG, SEPT, OCT, NOV, DEC
-
 	// commit ref earnings
-	mm := [12]Month{monthly.Jan, monthly.Feb, monthly.Mar, monthly.Apr, monthly.May, monthly.Jun, monthly.Jul, monthly.Aug, monthly.Sept, monthly.Oct, monthly.Nov, monthly.Dec}
-	for index, monthly := range mm {
+	months := [12]Month{monthly.Jan, monthly.Feb, monthly.Mar, monthly.Apr, monthly.May, monthly.Jun, monthly.Jul, monthly.Aug, monthly.Sept, monthly.Oct, monthly.Nov, monthly.Dec}
+	for index, monthly := range months {
+		monthly = JAN+Month(index) // assign month an integer to convert later to month name in string form
 		monthly.referralEarning(monthlyTransactions[index])
 	}
 
