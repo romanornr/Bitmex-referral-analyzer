@@ -56,9 +56,9 @@ func (month Month) referralEarning(transactions []Transaction) {
 			count += 1
 		}
 	}
-	if earnedBTC <= 0{
+	if earnedBTC <= 0 {
 		fmt.Printf("earned ref fees for %s: \t "+color.Red("%f BTC\n"), time.Month(month), earnedBTC)
-	}else {
+	} else {
 		fmt.Printf("earned ref fees for %s: \t "+color.Green("%f BTC\n"), time.Month(month), earnedBTC)
 	}
 }
@@ -144,6 +144,7 @@ func calculateTotalReferral(transactions []Transaction) {
 	var monthly Months
 
 	var monthlyTransactions [12][]Transaction
+	months := [12]Month{monthly.Jan, monthly.Feb, monthly.Mar, monthly.Apr, monthly.May, monthly.Jun, monthly.Jul, monthly.Aug, monthly.Sept, monthly.Oct, monthly.Nov, monthly.Dec}
 
 	for _, tx := range transactions {
 		if tx.Type == "AffiliatePayout" {
@@ -154,7 +155,6 @@ func calculateTotalReferral(transactions []Transaction) {
 		date := strings.Split(time[0], "/")
 		month, _ := strconv.Atoi(date[0])
 
-		months := [12]Month{monthly.Jan, monthly.Feb, monthly.Mar, monthly.Apr, monthly.May, monthly.Jun, monthly.Jul, monthly.Aug, monthly.Sept, monthly.Oct, monthly.Nov, monthly.Dec}
 		for index, _ := range months {
 			switch month {
 			case index:
@@ -164,13 +164,12 @@ func calculateTotalReferral(transactions []Transaction) {
 	}
 
 	// commit ref earnings
-	months := [12]Month{monthly.Jan, monthly.Feb, monthly.Mar, monthly.Apr, monthly.May, monthly.Jun, monthly.Jul, monthly.Aug, monthly.Sept, monthly.Oct, monthly.Nov, monthly.Dec}
 	for index, monthly := range months {
-		monthly = JAN+Month(index) // assign month an integer to convert later to month name in string form
+		monthly = JAN + Month(index) // assign month an integer to convert later to month name in string form
 		monthly.referralEarning(monthlyTransactions[index])
 	}
 
-	fmt.Printf("\nTotal earned ref fees:\t " + color.Green("%f BTC\n"), earned)
+	fmt.Printf("\nTotal earned ref fees:\t "+color.Green("%f BTC\n"), earned)
 }
 
 func main() {
