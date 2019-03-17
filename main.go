@@ -133,18 +133,8 @@ func calculateTotalReferral(transactions []Transaction) {
 
 	var earned float64
 	var m Months
-	var transactionsJan []Transaction
-	var transactionsFeb []Transaction
-	var transactionsMar []Transaction
-	//var transactionsApr []Transaction
-	//var transactionsMay []Transaction
-	//var transactionsJun []Transaction
-	//var transactionsJul []Transaction
-	//var transactionsAug []Transaction
-	//var transactionsSept []Transaction
-	//var transactionsOct []Transaction
-	//var transactionsNov []Transaction
-	//var transactionsDec []Transaction
+
+	var monthlyTransactions [11][]Transaction
 
 	for _, tx := range transactions {
 		if tx.Type == "AffiliatePayout" {
@@ -157,18 +147,18 @@ func calculateTotalReferral(transactions []Transaction) {
 
 		switch month {
 		case 1:
-			transactionsJan = append(transactionsJan, tx)
+			monthlyTransactions[month-1] = append(monthlyTransactions[month-1], tx)
 		case 2:
-			transactionsFeb = append(transactionsFeb, tx)
+			monthlyTransactions[month-1] = append(monthlyTransactions[month-1], tx)
 		case 3:
-			transactionsMar = append(transactionsMar, tx)
+			monthlyTransactions[month-1] = append(monthlyTransactions[month-1], tx)
 		}
 
 	}
 
-	m.Jan.referralEarning(transactionsJan)
-	m.Feb.referralEarning(transactionsFeb)
-	m.Mar.referralEarning(transactionsMar)
+	m.Jan.referralEarning(monthlyTransactions[0])
+	m.Feb.referralEarning(monthlyTransactions[1])
+	m.Mar.referralEarning(monthlyTransactions[2])
 
 	fmt.Printf("Total earned ref fees: %f BTC\n", earned)
 }
