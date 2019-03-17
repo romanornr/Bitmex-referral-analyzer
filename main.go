@@ -1,9 +1,14 @@
+// Copyright (c) 2019 Romano (Viacoin developer)
+// Distributed under the MIT software license, see the accompanying
+// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+
 package main
 
 import (
 	"bufio"
 	"encoding/csv"
 	"fmt"
+	"github.com/bclicn/color"
 	"io"
 	"io/ioutil"
 	"log"
@@ -51,7 +56,11 @@ func (month Month) referralEarning(transactions []Transaction) {
 			count += 1
 		}
 	}
-	fmt.Printf("earned ref fees for %s: \t %f BTC\n", time.Month(month), earnedBTC)
+	if earnedBTC <= 0{
+		fmt.Printf("earned ref fees for %s: \t "+color.Red("%f BTC\n"), time.Month(month), earnedBTC)
+	}else {
+		fmt.Printf("earned ref fees for %s: \t "+color.Green("%f BTC\n"), time.Month(month), earnedBTC)
+	}
 }
 
 type Months struct {
@@ -188,7 +197,7 @@ func calculateTotalReferral(transactions []Transaction) {
 	monthly.Nov.referralEarning(monthlyTransactions[10])
 	monthly.Dec.referralEarning(monthlyTransactions[11])
 
-	fmt.Printf("Total earned ref fees:\t %f BTC\n", earned)
+	fmt.Printf("\nTotal earned ref fees:\t " + color.Green("%f BTC\n"), earned)
 }
 
 func main() {
