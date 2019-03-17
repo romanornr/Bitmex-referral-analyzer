@@ -33,4 +33,7 @@ Your wallet history csv file should be saved in the same folder as the program.
 
 ![alt text](https://github.com/romanornr/Bitmex-referral-analyzer/blob/master/screenshots/screenshot.png?raw=true)
 
+###### Ref shill
+Join to get that 10% Shitmex discount: https://www.bitmex.com/register/vhT2qm
+
 
