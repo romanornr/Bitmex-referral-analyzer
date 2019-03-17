@@ -184,18 +184,11 @@ func calculateTotalReferral(transactions []Transaction) {
 
 	monthly.Jan, monthly.Feb, monthly.Mar, monthly.Apr, monthly.May, monthly.Jun, monthly.Jul, monthly.Aug, monthly.Sept, monthly.Oct, monthly.Nov, monthly.Dec = JAN, FEB, MAR, APR, MAY, JUN, JUL, AUG, SEPT, OCT, NOV, DEC
 
-	monthly.Jan.referralEarning(monthlyTransactions[0])
-	monthly.Feb.referralEarning(monthlyTransactions[1])
-	monthly.Mar.referralEarning(monthlyTransactions[2])
-	monthly.Apr.referralEarning(monthlyTransactions[3])
-	monthly.May.referralEarning(monthlyTransactions[4])
-	monthly.Jun.referralEarning(monthlyTransactions[5])
-	monthly.Jul.referralEarning(monthlyTransactions[6])
-	monthly.Aug.referralEarning(monthlyTransactions[7])
-	monthly.Sept.referralEarning(monthlyTransactions[8])
-	monthly.Oct.referralEarning(monthlyTransactions[9])
-	monthly.Nov.referralEarning(monthlyTransactions[10])
-	monthly.Dec.referralEarning(monthlyTransactions[11])
+	// commit ref earnings
+	mm := [12]Month{monthly.Jan, monthly.Feb, monthly.Mar, monthly.Apr, monthly.May, monthly.Jun, monthly.Jul, monthly.Aug, monthly.Sept, monthly.Oct, monthly.Nov, monthly.Dec}
+	for index, monthly := range mm {
+		monthly.referralEarning(monthlyTransactions[index])
+	}
 
 	fmt.Printf("\nTotal earned ref fees:\t " + color.Green("%f BTC\n"), earned)
 }
