@@ -15,6 +15,7 @@ import (
 )
 
 type Month time.Month
+const BITMEXREFLINK = "https://www.bitmex.com/register/vhT2qm"
 
 const (
 	JAN Month = iota + 1
@@ -77,8 +78,10 @@ func calculateTotalReferral(transactions []account.Transaction) {
 		monthly.referralEarning(monthlyTransactions[index])
 	}
 
-	fmt.Printf("\nTotal earned ref fees:\t "+color.Green("%f BTC\n"), earned)
+	fmt.Printf("\nTotal earned ref fees:\t "+color.Green("%f BTC\n\n"), earned)
 }
+
+var previousMonthEarning float64
 
 func (month Month) referralEarning(transactions []account.Transaction) {
 	var earnedBTC float64
@@ -90,15 +93,29 @@ func (month Month) referralEarning(transactions []account.Transaction) {
 			count += 1
 		}
 	}
+
+	change := ((earnedBTC - previousMonthEarning) / previousMonthEarning) * 100
+	if previousMonthEarning == 0 {
+		change = 0.00
+	}
+
+	var changeMessage string
+	changeMessage = fmt.Sprintf("change: " + color.Green("+%.2f%%\n"), change) // change: +347.98%
+	if change < 0 {
+		changeMessage = fmt.Sprintf("change: " + color.Red("%.2f%%\n"), change) // change: -85.95%
+	}
+
 	if earnedBTC <= 0 {
 		fmt.Printf("earned ref fees for %s: \t "+color.Red("%f BTC\n"), time.Month(month), earnedBTC)
 	} else {
-		fmt.Printf("earned ref fees for %s: \t "+color.Green("%f BTC\n"), time.Month(month), earnedBTC)
+		fmt.Printf("earned ref fees for %s: \t "+color.Green("%f BTC \t") + "%s", time.Month(month), earnedBTC, changeMessage)
 	}
+	previousMonthEarning = earnedBTC
 }
 
 func main() {
 	file := csv.ScanFiles(".csv")
 	transactions, _ := csv.ReadCSV(file)
 	calculateTotalReferral(transactions)
+	fmt.Printf("%s\n", BITMEXREFLINK)
 }
