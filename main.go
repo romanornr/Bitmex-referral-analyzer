@@ -154,31 +154,13 @@ func calculateTotalReferral(transactions []Transaction) {
 		date := strings.Split(time[0], "/")
 		month, _ := strconv.Atoi(date[0])
 
-		switch month {
-		case 1:
-			monthlyTransactions[month-1] = append(monthlyTransactions[month-1], tx)
-		case 2:
-			monthlyTransactions[month-1] = append(monthlyTransactions[month-1], tx)
-		case 3:
-			monthlyTransactions[month-1] = append(monthlyTransactions[month-1], tx)
-		case 4:
-			monthlyTransactions[month-1] = append(monthlyTransactions[month-1], tx)
-		case 5:
-			monthlyTransactions[month-1] = append(monthlyTransactions[month-1], tx)
-		case 6:
-			monthlyTransactions[month-1] = append(monthlyTransactions[month-1], tx)
-		case 7:
-			monthlyTransactions[month-1] = append(monthlyTransactions[month-1], tx)
-		case 8:
-			monthlyTransactions[month-1] = append(monthlyTransactions[month-1], tx)
-		case 9:
-			monthlyTransactions[month-1] = append(monthlyTransactions[month-1], tx)
-		case 10:
-			monthlyTransactions[month-1] = append(monthlyTransactions[month-1], tx)
-		case 11:
-			monthlyTransactions[month-1] = append(monthlyTransactions[month-1], tx)
-		case 12:
-			monthlyTransactions[month-1] = append(monthlyTransactions[month-1], tx)
+		mm := [12]Month{monthly.Jan, monthly.Feb, monthly.Mar, monthly.Apr, monthly.May, monthly.Jun, monthly.Jul, monthly.Aug, monthly.Sept, monthly.Oct, monthly.Nov, monthly.Dec}
+
+		for index, _ := range mm {
+			switch month {
+			case index:
+				monthlyTransactions[month-1] = append(monthlyTransactions[month-1], tx)
+			}
 		}
 	}
 
