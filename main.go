@@ -11,6 +11,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type Transaction struct {
@@ -23,7 +24,7 @@ type Transaction struct {
 	WalletBalance string
 }
 
-type Month int
+type Month time.Month
 
 const (
 	JAN Month = iota + 1
@@ -32,6 +33,7 @@ const (
 	APR
 	MAY
 	JUN
+	JUL
 	AUG
 	SEPT
 	OCT
@@ -42,8 +44,6 @@ const (
 func (month Month) referralEarning(transactions []Transaction) {
 	var earnedBTC float64
 	var count int
-	//t := time.Month(2)
-	//fmt.Println(t)
 
 	for _, tx := range transactions {
 		if tx.Type == "AffiliatePayout" {
@@ -51,7 +51,7 @@ func (month Month) referralEarning(transactions []Transaction) {
 			count += 1
 		}
 	}
-	fmt.Printf("earned ref fees for %d : %f BTC\n", month, earnedBTC)
+	fmt.Printf("earned ref fees for %s: \t %f BTC\n", time.Month(month), earnedBTC)
 }
 
 type Months struct {
@@ -132,9 +132,9 @@ func ReadCSV(file string) ([]Transaction, error) {
 func calculateTotalReferral(transactions []Transaction) {
 
 	var earned float64
-	var m Months
+	var monthly Months
 
-	var monthlyTransactions [11][]Transaction
+	var monthlyTransactions [12][]Transaction
 
 	for _, tx := range transactions {
 		if tx.Type == "AffiliatePayout" {
@@ -152,15 +152,43 @@ func calculateTotalReferral(transactions []Transaction) {
 			monthlyTransactions[month-1] = append(monthlyTransactions[month-1], tx)
 		case 3:
 			monthlyTransactions[month-1] = append(monthlyTransactions[month-1], tx)
+		case 4:
+			monthlyTransactions[month-1] = append(monthlyTransactions[month-1], tx)
+		case 5:
+			monthlyTransactions[month-1] = append(monthlyTransactions[month-1], tx)
+		case 6:
+			monthlyTransactions[month-1] = append(monthlyTransactions[month-1], tx)
+		case 7:
+			monthlyTransactions[month-1] = append(monthlyTransactions[month-1], tx)
+		case 8:
+			monthlyTransactions[month-1] = append(monthlyTransactions[month-1], tx)
+		case 9:
+			monthlyTransactions[month-1] = append(monthlyTransactions[month-1], tx)
+		case 10:
+			monthlyTransactions[month-1] = append(monthlyTransactions[month-1], tx)
+		case 11:
+			monthlyTransactions[month-1] = append(monthlyTransactions[month-1], tx)
+		case 12:
+			monthlyTransactions[month-1] = append(monthlyTransactions[month-1], tx)
 		}
-
 	}
 
-	m.Jan.referralEarning(monthlyTransactions[0])
-	m.Feb.referralEarning(monthlyTransactions[1])
-	m.Mar.referralEarning(monthlyTransactions[2])
+	monthly.Jan, monthly.Feb, monthly.Mar, monthly.Apr, monthly.May, monthly.Jun, monthly.Jul, monthly.Aug, monthly.Sept, monthly.Oct, monthly.Nov, monthly.Dec = JAN, FEB, MAR, APR, MAY, JUN, JUL, AUG, SEPT, OCT, NOV, DEC
 
-	fmt.Printf("Total earned ref fees: %f BTC\n", earned)
+	monthly.Jan.referralEarning(monthlyTransactions[0])
+	monthly.Feb.referralEarning(monthlyTransactions[1])
+	monthly.Mar.referralEarning(monthlyTransactions[2])
+	monthly.Apr.referralEarning(monthlyTransactions[3])
+	monthly.May.referralEarning(monthlyTransactions[4])
+	monthly.Jun.referralEarning(monthlyTransactions[5])
+	monthly.Jul.referralEarning(monthlyTransactions[6])
+	monthly.Aug.referralEarning(monthlyTransactions[7])
+	monthly.Sept.referralEarning(monthlyTransactions[8])
+	monthly.Oct.referralEarning(monthlyTransactions[9])
+	monthly.Nov.referralEarning(monthlyTransactions[10])
+	monthly.Dec.referralEarning(monthlyTransactions[11])
+
+	fmt.Printf("Total earned ref fees:\t %f BTC\n", earned)
 }
 
 func main() {
