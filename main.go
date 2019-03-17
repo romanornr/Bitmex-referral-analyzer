@@ -5,16 +5,21 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/bclicn/color"
 	"github.com/romanornr/Bitmex-referral-analyzer/account"
 	"github.com/romanornr/Bitmex-referral-analyzer/csv"
+	"io/ioutil"
+	"log"
+	"net/http"
 	"strconv"
 	"strings"
 	"time"
 )
 
 type Month time.Month
+
 const BITMEXREFLINK = "https://www.bitmex.com/register/vhT2qm"
 
 const (
@@ -78,7 +83,7 @@ func calculateTotalReferral(transactions []account.Transaction) {
 		monthly.referralEarning(monthlyTransactions[index])
 	}
 
-	fmt.Printf("\nTotal earned referral fees:\t "+color.Green("%f BTC\n\n"), earned)
+	fmt.Printf("\nTotal paid out referral fees:\t "+color.Green("%f BTC\n\n"), earned)
 }
 
 var previousMonthEarning float64
@@ -100,17 +105,67 @@ func (month Month) referralEarning(transactions []account.Transaction) {
 	}
 
 	var changeMessage string
-	changeMessage = fmt.Sprintf("change: " + color.Green("+%.2f%%\n"), change) // change: +347.98%
+	changeMessage = fmt.Sprintf("change: "+color.Green("+%.2f%%\n"), change) // change: +347.98%
 	if change < 0 {
-		changeMessage = fmt.Sprintf("change: " + color.Red("%.2f%%\n"), change) // change: -85.95%
+		changeMessage = fmt.Sprintf("change: "+color.Red("%.2f%%\n"), change) // change: -85.95%
 	}
+
+	earnedDollar := fmt.Sprintf(color.Green("$ %.2f"), earnedBTC * bitcoinPrice)
 
 	if earnedBTC <= 0 {
 		fmt.Printf("Bitmex referral fees %s \t "+color.Red("%f BTC\n"), time.Month(month), earnedBTC)
 	} else {
-		fmt.Printf("Bitmex referral fees %s \t "+color.Green("%f BTC \t") + "%s", time.Month(month), earnedBTC, changeMessage)
+		fmt.Printf("Bitmex referral fees %s \t "+color.Green("%f BTC \t")+" %s\t %s", time.Month(month), earnedBTC, earnedDollar, changeMessage)
 	}
 	previousMonthEarning = earnedBTC
+}
+
+type bitcoinTicker struct {
+	High      string `json:"high"`
+	Last      string `json:"last"`
+	Timestamp string `json:"timestamp"`
+	Bid       string `json:"bid"`
+	Vwap      string `json:"vwap"`
+	Volume    string `json:"volume"`
+	Low       string `json:"low"`
+	Ask       string `json:"ask"`
+	Open      string `json:"open"`
+}
+
+func bitcoinToDollar() {
+	url := fmt.Sprintf("https://www.bitstamp.net/api/v2/ticker/btcusd")
+	client := http.Client{
+		Timeout: time.Second * 10,
+	}
+
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	valueBTC := bitcoinTicker{}
+	err = json.Unmarshal(body, &valueBTC)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	bitcoinPrice, _ = strconv.ParseFloat(valueBTC.Bid, 64)
+}
+
+var bitcoinPrice float64
+
+func init() {
+	bitcoinToDollar()
 }
 
 func main() {
