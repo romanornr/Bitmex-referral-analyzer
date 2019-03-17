@@ -78,7 +78,7 @@ func calculateTotalReferral(transactions []account.Transaction) {
 		monthly.referralEarning(monthlyTransactions[index])
 	}
 
-	fmt.Printf("\nTotal earned ref fees:\t "+color.Green("%f BTC\n\n"), earned)
+	fmt.Printf("\nTotal earned referral fees:\t "+color.Green("%f BTC\n\n"), earned)
 }
 
 var previousMonthEarning float64
@@ -106,9 +106,9 @@ func (month Month) referralEarning(transactions []account.Transaction) {
 	}
 
 	if earnedBTC <= 0 {
-		fmt.Printf("earned ref fees for %s: \t "+color.Red("%f BTC\n"), time.Month(month), earnedBTC)
+		fmt.Printf("Bitmex referral fees %s \t "+color.Red("%f BTC\n"), time.Month(month), earnedBTC)
 	} else {
-		fmt.Printf("earned ref fees for %s: \t "+color.Green("%f BTC \t") + "%s", time.Month(month), earnedBTC, changeMessage)
+		fmt.Printf("Bitmex referral fees %s \t "+color.Green("%f BTC \t") + "%s", time.Month(month), earnedBTC, changeMessage)
 	}
 	previousMonthEarning = earnedBTC
 }
