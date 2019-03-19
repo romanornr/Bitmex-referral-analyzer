@@ -10,6 +10,7 @@ import (
 	"github.com/bclicn/color"
 	"github.com/romanornr/Bitmex-referral-analyzer/account"
 	"github.com/romanornr/Bitmex-referral-analyzer/csv"
+	"github.com/romanornr/Bitmex-referral-analyzer/config"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -17,6 +18,8 @@ import (
 	"strings"
 	"time"
 )
+
+var c config.Conf
 
 type Month time.Month
 
@@ -67,9 +70,13 @@ func calculateTotalReferral(transactions []account.Transaction) {
 
 		time := strings.Split(tx.Time, ",")
 		date := strings.Split(time[0], "/")
+		year, _ := strconv.Atoi(date[2])
 		month, _ := strconv.Atoi(date[0])
 
 		for index, _ := range months {
+			if year < c.Start_year {
+				continue
+			}
 			switch month {
 			case index:
 				monthlyTransactions[month-1] = append(monthlyTransactions[month-1], tx)
@@ -165,6 +172,7 @@ func bitcoinToDollar() {
 var bitcoinPrice float64
 
 func init() {
+	c.GetConf()
 	bitcoinToDollar()
 }
 
