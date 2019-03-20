@@ -64,14 +64,15 @@ func calculateTotalReferral(transactions []account.Transaction) {
 	months := [12]Month{monthly.Jan, monthly.Feb, monthly.Mar, monthly.Apr, monthly.May, monthly.Jun, monthly.Jul, monthly.Aug, monthly.Sept, monthly.Oct, monthly.Nov, monthly.Dec}
 
 	for _, tx := range transactions {
-		if tx.Type == "AffiliatePayout" {
-			earned += tx.Amount / 100000000
-		}
 
 		time := strings.Split(tx.Time, ",")
 		date := strings.Split(time[0], "/")
 		year, _ := strconv.Atoi(date[2])
 		month, _ := strconv.Atoi(date[0])
+
+		if tx.Type == "AffiliatePayout" && year >= c.Start_year {
+			earned += tx.Amount / 100000000
+		}
 
 		for index, _ := range months {
 			if year < c.Start_year {
@@ -100,9 +101,10 @@ func (month Month) referralEarning(transactions []account.Transaction) {
 	var count int
 
 	for _, tx := range transactions {
-		if tx.Type == "AffiliatePayout" {
-			earnedBTC += (tx.Amount / 100000000)
-			count += 1
+
+			if tx.Type == "AffiliatePayout" {
+				earnedBTC += (tx.Amount / 100000000)
+				count += 1
 		}
 	}
 
