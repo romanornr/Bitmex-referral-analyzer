@@ -9,8 +9,8 @@ import (
 	"fmt"
 	"github.com/bclicn/color"
 	"github.com/romanornr/Bitmex-referral-analyzer/account"
-	"github.com/romanornr/Bitmex-referral-analyzer/csv"
 	"github.com/romanornr/Bitmex-referral-analyzer/config"
+	"github.com/romanornr/Bitmex-referral-analyzer/csv"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -102,9 +102,9 @@ func (month Month) referralEarning(transactions []account.Transaction) {
 
 	for _, tx := range transactions {
 
-			if tx.Type == "AffiliatePayout" {
-				earnedBTC += (tx.Amount / 100000000)
-				count += 1
+		if tx.Type == "AffiliatePayout" {
+			earnedBTC += (tx.Amount / 100000000)
+			count += 1
 		}
 	}
 
@@ -119,7 +119,7 @@ func (month Month) referralEarning(transactions []account.Transaction) {
 		changeMessage = fmt.Sprintf("change: "+color.Red("%.2f%%\n"), change) // change: -85.95%
 	}
 
-	earnedDollar := fmt.Sprintf(color.Green("$ %.2f"), earnedBTC * bitcoinPrice)
+	earnedDollar := fmt.Sprintf(color.Green("$ %.2f"), earnedBTC*bitcoinPrice)
 
 	if earnedBTC <= 0 {
 		fmt.Printf("Bitmex referral fees %s \t "+color.Red("%f BTC\n"), time.Month(month), earnedBTC)
@@ -179,8 +179,10 @@ func init() {
 }
 
 func main() {
-	file := csv.ScanFiles(".csv")
-	transactions, _ := csv.ReadCSV(file)
+	files := csv.ScanFiles(".csv")
+	transactions, _ := csv.ReadCSVFiles(files)
 	calculateTotalReferral(transactions)
 	fmt.Printf("%s\n", BITMEXREFLINK)
+
+	csv.ReadCSVFiles(csv.ScanFiles("csv"))
 }

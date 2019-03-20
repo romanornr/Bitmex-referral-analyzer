@@ -10,7 +10,7 @@ type Conf struct {
 	Start_year int `yaml:"start_year"`
 }
 
-func (c *Conf) GetConf() * Conf{
+func (c *Conf) GetConf() *Conf {
 	ymlFile, err := ioutil.ReadFile("config.yml")
 	if err != nil {
 		log.Printf("file config.yml does not exist: %s\n", err)
