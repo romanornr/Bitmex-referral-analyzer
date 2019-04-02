@@ -10,6 +10,7 @@ import (
 	"os"
 	"regexp"
 	"strconv"
+	"strings"
 )
 
 func ScanFiles(extension string) []string {
@@ -57,13 +58,19 @@ func ReadCSVFiles(csvfiles []string) ([]account.Transaction, error) {
 				log.Fatal(error)
 			}
 
-			amount, _ := strconv.ParseFloat(record[2], 64)
+			amountString := strings.TrimRight(record[2], " XBt")     // 88,055,513 XBt = 0.88 btc
+			amountString = strings.ReplaceAll(amountString, ",", "") // remove the  ,
+			amount, err := strconv.ParseFloat(amountString, 64)
+			if err != nil {
+				panic(err)
+			}
+
 			fee, _ := strconv.ParseFloat(record[3], 64)
 
 			tx := account.Transaction{
 				Time:          record[0],
 				Type:          record[1],
-				Amount:        amount,
+				Amount:        amount, //amount,
 				Fee:           fee,
 				Address:       record[4],
 				Status:        record[5],
