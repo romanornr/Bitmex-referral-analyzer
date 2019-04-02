@@ -65,8 +65,12 @@ func calculateTotalReferral(transactions []account.Transaction) {
 
 	for _, tx := range transactions {
 
-		transactionTime := strings.Split(tx.Time, ",") // Sep 27 2019 2:00:00 PM
-		//year, _ := strconv.ParseInt(transactionTime[1], 10, 64)
+		transactionTime := strings.Split(tx.Time, ",")               // Sep 27 2019 2:00:00 PM
+		transactionTimeYear := strings.TrimSpace(transactionTime[1]) // strconv.ParseInt: parsing " 2019"
+		year, err := strconv.ParseInt(transactionTimeYear, 10, 64)
+		if err != nil {
+			panic(err)
+		}
 
 		x := strings.Split(transactionTime[2], " ") // ["2:00:00",  "PM"]
 		time, err := time.Parse(time.Stamp, transactionTime[0]+" "+x[1])
@@ -76,15 +80,14 @@ func calculateTotalReferral(transactions []account.Transaction) {
 
 		month := int(time.Month())
 
-		//if tx.Type == "AffiliatePayout" && year >= int64(c.Start_year) {
-		if tx.Type == "AffiliatePayout" {
+		if tx.Type == "AffiliatePayout" && year >= int64(c.Start_year) {
 			earned += tx.Amount / 100000000
 		}
 
 		for index, _ := range months {
-			//if year < int64(c.Start_year) {
-			//	continue
-			//	}
+			if year < int64(c.Start_year) {
+				continue
+			}
 			switch month {
 			case index:
 				monthlyTransactions[month-1] = append(monthlyTransactions[month-1], tx)
