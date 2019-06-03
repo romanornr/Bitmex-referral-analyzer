@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/bclicn/color"
+	"github.com/metakeule/fmtdate"
 	"github.com/romanornr/Bitmex-referral-analyzer/account"
 	"github.com/romanornr/Bitmex-referral-analyzer/config"
 	"github.com/romanornr/Bitmex-referral-analyzer/csv"
@@ -64,21 +65,15 @@ func calculateTotalReferral(transactions []account.Transaction) {
 	months := [12]Month{monthly.Jan, monthly.Feb, monthly.Mar, monthly.Apr, monthly.May, monthly.Jun, monthly.Jul, monthly.Aug, monthly.Sept, monthly.Oct, monthly.Nov, monthly.Dec}
 
 	for _, tx := range transactions {
+		transactionTime := strings.Split(tx.Time, ",")
 
-		transactionTime := strings.Split(tx.Time, ",")               // Sep 27 2019 2:00:00 PM
-		transactionTimeYear := strings.TrimSpace(transactionTime[1]) // strconv.ParseInt: parsing " 2019"
-		year, err := strconv.ParseInt(transactionTimeYear, 10, 64)
+		date, err := fmtdate.Parse("M/D/YYYY", transactionTime[0])
 		if err != nil {
-			panic(err)
+			//fmt.Printf("error date parsing for %s: %s\n", transactionTime[0], err)
 		}
 
-		x := strings.Split(transactionTime[2], " ") // ["2:00:00",  "PM"]
-		time, err := time.Parse(time.Stamp, transactionTime[0]+" "+x[1])
-		if err != nil {
-			panic(err)
-		}
-
-		month := int(time.Month())
+		year := int64(date.Year())
+		month := int(date.Month())
 
 		if tx.Type == "AffiliatePayout" && year >= int64(c.Start_year) {
 			earned += tx.Amount / 100000000
