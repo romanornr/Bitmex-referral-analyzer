@@ -6,6 +6,7 @@ import (
 	"github.com/spf13/viper"
 	"github.com/zmxv/bitmexgo"
 	"time"
+	"github.com/btcsuite/btcutil"
 )
 
 var c config.Conf
@@ -34,8 +35,9 @@ func main() {
 	//var earned float64
 
 	referralEarning(tx)
-	x := MonthEarned(6)
+	x := MonthEarned(7)
 	fmt.Println(x)
+	last7days(tx)
 
 	//for i := len(tx) - 1; i >= 0; i--{
 	//	year := tx[i].Timestamp.Year()
@@ -109,6 +111,46 @@ func referralEarning(transactions []bitmexgo.Transaction) {
 		}
 	}
 	//fmt.Println(monthlyTransactions[0])
+}
+
+
+type Stat struct {
+	date string
+	btc string
+	dollar string
+	change string
+}
+
+type Stats struct {
+	Stat []Stat
+}
+
+func last7days(transactions []bitmexgo.Transaction) *Stats{
+	config.GetViperConfig()
+	start_year := viper.GetInt("start_year")
+
+	days := 0
+	stats := new(Stats)
+
+	for i := len(transactions) - 1; i >= 0; i-- {
+		if transactions[i].TransactType == "AffiliatePayout" && transactions[i].Timestamp.Year() >= start_year {
+			days += 1
+			result := new(Stat)
+			btc, _ := btcutil.NewAmount(float64(transactions[i].Amount) / 100000000)
+			result.date = transactions[i].Timestamp.Weekday().String()
+			result.btc = btc.String()
+			stats.AddStat(*result)
+			if days >= 7 {
+				break
+			}
+		}
+	}
+	return stats
+}
+
+func (s *Stats) AddStat(item Stat) []Stat {
+	s.Stat = append(s.Stat, item)
+	return s.Stat
 }
 
 func MonthEarned(month int) float64 {

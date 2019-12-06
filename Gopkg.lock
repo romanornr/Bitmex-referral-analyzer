@@ -10,6 +10,31 @@
   revision = "108f2023dc84f1f9e64f246fa3997993971b2706"
 
 [[projects]]
+  digest = "1:510e6aa1f1dbc90955f93015ccc305e62b665612dac546a9503d53daf5002c40"
+  name = "github.com/btcsuite/btcd"
+  packages = [
+    "btcec",
+    "chaincfg",
+    "chaincfg/chainhash",
+    "wire",
+  ]
+  pruneopts = "UT"
+  revision = "f3ec13030e4e828869954472cbc51ac36bee5c1d"
+  version = "v0.20.1-beta"
+
+[[projects]]
+  branch = "master"
+  digest = "1:d17099fb1aae071174db067e43a02780bbe534a279e0506783acd33c4f4b131c"
+  name = "github.com/btcsuite/btcutil"
+  packages = [
+    ".",
+    "base58",
+    "bech32",
+  ]
+  pruneopts = "UT"
+  revision = "9e5f4b9a998d263e3ce9c56664a7816001ac8000"
+
+[[projects]]
   digest = "1:abeb38ade3f32a92943e5be54f55ed6d6e3b6602761d74b4aab4c9dd45c18abd"
   name = "github.com/fsnotify/fsnotify"
   packages = ["."]
@@ -132,6 +157,14 @@
 
 [[projects]]
   branch = "master"
+  digest = "1:1fa95129371749532e2ac8b93a0016c549ebe77f25c6fad296b6ee271fae2fd6"
+  name = "golang.org/x/crypto"
+  packages = ["ripemd160"]
+  pruneopts = "UT"
+  revision = "e7c4368fe9ddd156b5f1463283cb51c5b400c373"
+
+[[projects]]
+  branch = "master"
   digest = "1:fc96eb481f72e9a5edeb4bb3f3610d3b9384c036f7c1e39f8c0dedff23d0c34d"
   name = "golang.org/x/sys"
   packages = ["unix"]
@@ -166,6 +199,7 @@
   analyzer-version = 1
   input-imports = [
     "github.com/bclicn/color",
+    "github.com/btcsuite/btcutil",
     "github.com/metakeule/fmtdate",
     "github.com/spf13/viper",
     "github.com/zmxv/bitmexgo",
