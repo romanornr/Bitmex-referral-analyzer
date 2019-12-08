@@ -17,18 +17,6 @@ var apiSecret string
 
 func main() {
 
-	//config.GetViperConfig()
-	//
-	//// Get your API key/secret pair at https://www.bitmex.com/app/apiKeys
-	//apiKey = viper.GetString("api_key")
-	//apiSecret = viper.GetString("api_secret")
-	//
-	//// Create an authentication context
-	//auth := bitmexgo.NewAPIKeyContext(apiKey, apiSecret)
-	//
-	//// Create a shareable API client instance
-	//apiClient := bitmexgo.NewAPIClient(bitmexgo.NewConfiguration())
-
 	auth, apiClient := client.GetInstance()
 
 	// Call APIs without parameters by passing the auth context.
