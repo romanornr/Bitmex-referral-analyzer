@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
+	"github.com/btcsuite/btcutil"
+	"github.com/romanornr/Bitmex-referral-analyzer/bitcoin"
 	"github.com/romanornr/Bitmex-referral-analyzer/config"
 	"github.com/spf13/viper"
 	"github.com/zmxv/bitmexgo"
 	"time"
-	"github.com/btcsuite/btcutil"
 )
 
 var c config.Conf
@@ -37,7 +38,8 @@ func main() {
 	referralEarning(tx)
 	x := MonthEarned(7)
 	fmt.Println(x)
-	last7days(tx)
+	y := weeklyEarnings(tx)
+	fmt.Println(y)
 
 	//for i := len(tx) - 1; i >= 0; i--{
 	//	year := tx[i].Timestamp.Year()
@@ -93,7 +95,6 @@ func referralEarning(transactions []bitmexgo.Transaction) {
 	config.GetViperConfig()
 	start_year := viper.GetInt("start_year")
 
-
 	months := [12]Month{JAN, FEB, MAR, APR, MAY, JUN, JUL, SEPT, OCT, NOV, DEC}
 
 	for i := len(transactions) - 1; i >= 0; i-- {
@@ -115,36 +116,49 @@ func referralEarning(transactions []bitmexgo.Transaction) {
 
 
 type Stat struct {
-	date string
-	btc string
+	date   string
+	btc    string
 	dollar string
 	change string
 }
 
 type Stats struct {
 	Stat []Stat
+	totalBtc string
+	totalDollar string
 }
 
-func last7days(transactions []bitmexgo.Transaction) *Stats{
+// get earning stats from monday till current day
+func weeklyEarnings(transactions []bitmexgo.Transaction) *Stats {
 	config.GetViperConfig()
-	start_year := viper.GetInt("start_year")
+	startYear := viper.GetInt("start_year")
+	bitcoinPrice := bitcoin.ToDollar()
 
-	days := 0
 	stats := new(Stats)
+	var totalBTC btcutil.Amount
+	var totalDollar float64
 
-	for i := len(transactions) - 1; i >= 0; i-- {
-		if transactions[i].TransactType == "AffiliatePayout" && transactions[i].Timestamp.Year() >= start_year {
-			days += 1
+	for i := 0; i < len(transactions); i++ {
+		if transactions[i].TransactType == "AffiliatePayout" && transactions[i].Timestamp.Year() >= startYear {
 			result := new(Stat)
 			btc, _ := btcutil.NewAmount(float64(transactions[i].Amount) / 100000000)
 			result.date = transactions[i].Timestamp.Weekday().String()
 			result.btc = btc.String()
+
+			result.dollar = fmt.Sprintf("$%.2f", btc.ToBTC()*bitcoinPrice)
 			stats.AddStat(*result)
-			if days >= 7 {
+
+			totalBTC += btc
+			totalDollar += btc.ToBTC() * bitcoinPrice
+
+			if result.date == "Monday" {
 				break
 			}
 		}
 	}
+
+	stats.totalDollar = fmt.Sprintf("$%.2f", totalDollar)
+	stats.totalBtc = totalBTC.String()
 	return stats
 }
 
