@@ -1,4 +1,4 @@
-package main
+package bmex
 
 import (
 	"fmt"
@@ -122,16 +122,16 @@ func referralEarning(transactions []bitmexgo.Transaction) {
 
 
 type Stat struct {
-	date   string
-	btc    string
-	dollar string
-	change string
+	Date   string
+	Btc    string
+	Dollar string
+	Change string
 }
 
 type Stats struct {
 	Stat []Stat
-	totalBtc string
-	totalDollar string
+	TotalBtc string
+	TotalDollar string
 }
 
 // get earning stats from monday till current day
@@ -147,23 +147,23 @@ func WeeklyEarnings(transactions []bitmexgo.Transaction) *Stats {
 		if transactions[i].TransactType == "AffiliatePayout" && transactions[i].Timestamp.Year() >= startYear {
 			result := new(Stat)
 			btc, _ := btcutil.NewAmount(float64(transactions[i].Amount) / 100000000)
-			result.date = transactions[i].Timestamp.Weekday().String()
-			result.btc = btc.String()
+			result.Date = transactions[i].Timestamp.Weekday().String()
+			result.Btc = btc.String()
 
-			result.dollar = fmt.Sprintf("$%.2f", btc.ToBTC()*bitcoinPrice)
+			result.Dollar = fmt.Sprintf("$%.2f", btc.ToBTC()*bitcoinPrice)
 			stats.AddStat(*result)
 
 			totalBTC += btc
 			totalDollar += btc.ToBTC() * bitcoinPrice
 
-			if result.date == "Monday" {
+			if result.Date == "Monday" {
 				break
 			}
 		}
 	}
 
-	stats.totalDollar = fmt.Sprintf("$%.2f", totalDollar)
-	stats.totalBtc = totalBTC.String()
+	stats.TotalDollar = fmt.Sprintf("$%.2f", totalDollar)
+	stats.TotalBtc = totalBTC.String()
 	return stats
 }
 

@@ -29,7 +29,7 @@ func (c *Conf) GetConf() *Conf {
 // ip := viper.GetString("server.ip)
 func GetViperConfig() error {
 	viper.SetConfigType("yml")
-	viper.AddConfigPath("../config")
+	viper.AddConfigPath("config")
 	viper.SetConfigName("config")
 
 
