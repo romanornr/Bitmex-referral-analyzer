@@ -43,6 +43,14 @@
   version = "v1.4.7"
 
 [[projects]]
+  digest = "1:51712f342cdefcad2c867f399a3ce8223675221d4386c81cfcccd8f0656e722e"
+  name = "github.com/go-telegram-bot-api/telegram-bot-api"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "9860bdfd3a171ceafb6e1eafa163482a6ef92643"
+  version = "v4.6.4"
+
+[[projects]]
   digest = "1:c0d19ab64b32ce9fe5cf4ddceba78d5bc9807f0016db6b1183599da3dcc24d10"
   name = "github.com/hashicorp/hcl"
   packages = [
@@ -145,6 +153,14 @@
   version = "v1.2.0"
 
 [[projects]]
+  digest = "1:420817f94b6c172dabb8a054d0b2d257d7437a87c7c8c7ee432bc008a577fc46"
+  name = "github.com/technoweenie/multipartstreamer"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "a90a01d73ae432e2611d178c18367fbaa13e0154"
+  version = "v1.0.1"
+
+[[projects]]
   branch = "master"
   digest = "1:eebdb5553ad4102412966e87c4bf2d5b69026a20af86041840b6e9ae6813f98d"
   name = "github.com/zmxv/bitmexgo"
@@ -200,6 +216,7 @@
   input-imports = [
     "github.com/bclicn/color",
     "github.com/btcsuite/btcutil",
+    "github.com/go-telegram-bot-api/telegram-bot-api",
     "github.com/metakeule/fmtdate",
     "github.com/spf13/viper",
     "github.com/zmxv/bitmexgo",

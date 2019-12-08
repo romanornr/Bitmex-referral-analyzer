@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/btcsuite/btcutil"
 	"github.com/romanornr/Bitmex-referral-analyzer/bitcoin"
+	"github.com/romanornr/Bitmex-referral-analyzer/client"
 	"github.com/romanornr/Bitmex-referral-analyzer/config"
 	"github.com/spf13/viper"
 	"github.com/zmxv/bitmexgo"
@@ -11,20 +12,24 @@ import (
 )
 
 var c config.Conf
+var apiKey string
+var apiSecret string
 
 func main() {
 
-	config.GetViperConfig()
+	//config.GetViperConfig()
+	//
+	//// Get your API key/secret pair at https://www.bitmex.com/app/apiKeys
+	//apiKey = viper.GetString("api_key")
+	//apiSecret = viper.GetString("api_secret")
+	//
+	//// Create an authentication context
+	//auth := bitmexgo.NewAPIKeyContext(apiKey, apiSecret)
+	//
+	//// Create a shareable API client instance
+	//apiClient := bitmexgo.NewAPIClient(bitmexgo.NewConfiguration())
 
-	// Get your API key/secret pair at https://www.bitmex.com/app/apiKeys
-	apiKey := viper.GetString("api_key")
-	apiSecret := viper.GetString("api_secret")
-
-	// Create an authentication context
-	auth := bitmexgo.NewAPIKeyContext(apiKey, apiSecret)
-
-	// Create a shareable API client instance
-	apiClient := bitmexgo.NewAPIClient(bitmexgo.NewConfiguration())
+	auth, apiClient := client.GetInstance()
 
 	// Call APIs without parameters by passing the auth context.
 	// e.g. getting exchange-wide turnover and volume statistics:
@@ -38,7 +43,7 @@ func main() {
 	referralEarning(tx)
 	x := MonthEarned(7)
 	fmt.Println(x)
-	y := weeklyEarnings(tx)
+	y := WeeklyEarnings(tx)
 	fmt.Println(y)
 
 	//for i := len(tx) - 1; i >= 0; i--{
@@ -92,7 +97,6 @@ var monthlyTransactions [12][]bitmexgo.Transaction
 
 func referralEarning(transactions []bitmexgo.Transaction) {
 
-	config.GetViperConfig()
 	start_year := viper.GetInt("start_year")
 
 	months := [12]Month{JAN, FEB, MAR, APR, MAY, JUN, JUL, SEPT, OCT, NOV, DEC}
@@ -129,8 +133,7 @@ type Stats struct {
 }
 
 // get earning stats from monday till current day
-func weeklyEarnings(transactions []bitmexgo.Transaction) *Stats {
-	config.GetViperConfig()
+func WeeklyEarnings(transactions []bitmexgo.Transaction) *Stats {
 	startYear := viper.GetInt("start_year")
 	bitcoinPrice := bitcoin.ToDollar()
 
