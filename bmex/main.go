@@ -80,6 +80,20 @@ type monthly struct {
 	//Dec  Month
 }
 
+// loads wallet history by using bitmex api
+// returns Transactions which can be used by other functions
+func LoadWalletHistory() (error, []bitmexgo.Transaction){
+	auth, apiClient := client.GetInstance()
+
+	// Call APIs without parameters by passing the auth context.
+	// e.g. getting exchange-wide turnover and volume statistics:
+	tx, _, err := apiClient.UserApi.UserGetWalletHistory(auth, nil)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return err, tx
+}
+
 var previousMonthEarning float64
 var monthlyTransactions [12][]bitmexgo.Transaction
 
