@@ -5,7 +5,6 @@ import (
 	"github.com/romanornr/Bitmex-referral-analyzer/config"
 	"github.com/spf13/viper"
 	"github.com/zmxv/bitmexgo"
-	"log"
 )
 
 var c config.Conf
@@ -13,12 +12,13 @@ var apiKey string
 var apiSecret string
 
 var  instance *bitmexgo.APIClient
+var auth context.Context
 
 // Using the singleton design pattern to check if an instance already exist
 // if not, only then create a new one
 func GetInstance() (context.Context, *bitmexgo.APIClient) {
 	if instance != nil {
-		return nil, instance
+		return auth, instance
 	}
 
 	config.GetViperConfig()
@@ -27,15 +27,11 @@ func GetInstance() (context.Context, *bitmexgo.APIClient) {
 	apiKey = viper.GetString("api_key")
 	apiSecret = viper.GetString("api_secret")
 
-	var err error
 	// Create an authentication context
-	auth := bitmexgo.NewAPIKeyContext(apiKey, apiSecret)
+	auth = bitmexgo.NewAPIKeyContext(apiKey, apiSecret)
 
 	// Create a shareable API client instance
 	instance = bitmexgo.NewAPIClient(bitmexgo.NewConfiguration())
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	return auth, instance
 }
