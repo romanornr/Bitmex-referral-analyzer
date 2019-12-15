@@ -8,7 +8,6 @@ import (
 	"github.com/romanornr/Bitmex-referral-analyzer/config"
 	"github.com/spf13/viper"
 	"github.com/zmxv/bitmexgo"
-	"time"
 )
 
 var c config.Conf
@@ -28,7 +27,7 @@ func main() {
 
 	//var earned float64
 
-	referralEarning(tx)
+	//referralEarning(tx)
 	x := MonthEarned(7)
 	fmt.Println(x)
 	y := WeeklyEarnings(tx)
@@ -48,38 +47,6 @@ func main() {
 
 const BITMEXREFLINK = "https://www.bitmex.com/register/vhT2qm"
 
-type Month time.Month
-
-const (
-	JAN Month = iota + 1
-	FEB
-	MAR
-	APR
-	MAY
-	JUN
-	JUL
-	AUG
-	SEPT
-	OCT
-	NOV
-	DEC
-)
-
-type monthly struct {
-	Jan float64
-	//Feb  Month
-	//Mar  Month
-	//Apr  Month
-	//May  Month
-	//Jun  Month
-	//Jul  Month
-	//Aug  Month
-	//Sept Month
-	//Oct  Month
-	//Nov  Month
-	//Dec  Month
-}
-
 // loads wallet history by using bitmex api
 // returns Transactions which can be used by other functions
 func LoadWalletHistory() (error, []bitmexgo.Transaction){
@@ -97,27 +64,52 @@ func LoadWalletHistory() (error, []bitmexgo.Transaction){
 var previousMonthEarning float64
 var monthlyTransactions [12][]bitmexgo.Transaction
 
-func referralEarning(transactions []bitmexgo.Transaction) {
+func ReferralEarning(transactions []bitmexgo.Transaction) *Stats {
 
-	start_year := viper.GetInt("start_year")
+	startYear := viper.GetInt("start_year")
 
-	months := [12]Month{JAN, FEB, MAR, APR, MAY, JUN, JUL, SEPT, OCT, NOV, DEC}
+	bitcoinPrice := bitcoin.ToDollar()
 
-	for i := len(transactions) - 1; i >= 0; i-- {
+	stats := new(Stats)
+	var monthBTC btcutil.Amount
+	var monthDollar float64
+	var totalBTC btcutil.Amount
+	var totalDollar float64
+	var currentMonth string
 
-		if transactions[i].TransactType == "AffiliatePayout" && transactions[i].Timestamp.Year() >= start_year {
-			for index, _ := range months {
-				month := int(transactions[i].Timestamp.Month())
+	var result *Stat
+	result = new(Stat)
 
-				switch month {
-				case index:
-					monthlyTransactions[month-1] = append(monthlyTransactions[month-1], transactions[i])
-				}
+	for i := 0; i < len(transactions); i++ {
+		if transactions[i].TransactType == "AffiliatePayout" && transactions[i].Timestamp.Year() >= startYear {
+
+			if currentMonth != transactions[i].Timestamp.Month().String() || currentMonth == "" {
+				fmt.Printf("currentMonth: %s\n", currentMonth)
+				fmt.Printf("tx month: %s\n", transactions[i].Timestamp.Month())
+				currentMonth = transactions[i].Timestamp.Month().String()
+				result.Btc = monthBTC.String()
+				result.Dollar = fmt.Sprintf("$%.2f", monthBTC.ToBTC()*bitcoinPrice)
+				stats.AddStat(*result)
+				result = new(Stat)
+				monthBTC = 0
+				monthDollar = 0.0
 			}
 
+			btc, _ := btcutil.NewAmount(float64(transactions[i].Amount) / 100000000)
+			result.Date = transactions[i].Timestamp.Month().String()
+			monthBTC += btc
+			monthDollar += btc.ToBTC()*bitcoinPrice
+
+			totalBTC += btc
+			totalDollar += btc.ToBTC() * bitcoinPrice
 		}
 	}
-	//fmt.Println(monthlyTransactions[0])
+
+	stats.TotalDollar = fmt.Sprintf("$%.2f", totalDollar)
+	stats.TotalBtc = totalBTC.String()
+
+	fmt.Println(stats)
+	return stats
 }
 
 

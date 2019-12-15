@@ -89,6 +89,7 @@ func (s *Session) Handle() {
 
 	m := map[string]interface{}{
 		"/week" + botUsername:   getWeeklyEarnings,
+		"/months" + botUsername: getMonthlyEarnings,
 	}
 
 	if _, ok := m[s.command.Command]; ok {
@@ -110,6 +111,25 @@ func CommandParser(s *Session) *Session {
 	params := strings.Split(temp, " ")[1:]
 	s.command = &Command{Command: command, Params: params}
 	return s
+}
+
+func getMonthlyEarnings(s *Session) {
+	err, tx := bmex.LoadWalletHistory()
+	if err != nil {
+		log.Printf("Failed to load wallet transactions: %s\n", err)
+		message := fmt.Sprintf("Failed to load wallet transactions: %s\n", err)
+		sendMessage(s, message)
+	}
+	bmex.ReferralEarning(tx)
+
+	//message := "<code>"
+	//stats := bmex.ReferralEarning(tx)
+	//for i := len(stats.Stat) - 1; i >= 0; i-- {
+	//	message += fmt.Sprintf("%s\t\t\t%s\n", stats.Stat[i].Date, stats.Stat[i].Dollar)
+	//}
+	//message += fmt.Sprintf("\nTotal BTC: %s \t Total Dollar: %s</code>",stats.TotalBtc, stats.TotalDollar)
+	//
+	//sendMessage(s, message)
 }
 
 func getWeeklyEarnings(s *Session) {
