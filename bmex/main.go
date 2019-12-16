@@ -49,7 +49,7 @@ const BITMEXREFLINK = "https://www.bitmex.com/register/vhT2qm"
 
 // loads wallet history by using bitmex api
 // returns Transactions which can be used by other functions
-func LoadWalletHistory() (error, []bitmexgo.Transaction){
+func LoadWalletHistory() (error, []bitmexgo.Transaction) {
 	auth, apiClient := client.GetInstance()
 
 	// Call APIs without parameters by passing the auth context.
@@ -80,25 +80,37 @@ func ReferralEarning(transactions []bitmexgo.Transaction) *Stats {
 	var result *Stat
 	result = new(Stat)
 
-	for i := 0; i < len(transactions); i++ {
+	// filter transactions by Type and begin year and put them all bitmexgo.Transaction struct
+	var filteredTransactions []bitmexgo.Transaction
+	for i := len(transactions) - 1; i > -0; i-- {
 		if transactions[i].TransactType == "AffiliatePayout" && transactions[i].Timestamp.Year() >= startYear {
+			filteredTransactions = append(filteredTransactions, transactions[i])
+		}
+	}
 
-			if currentMonth != transactions[i].Timestamp.Month().String() || currentMonth == "" {
-				fmt.Printf("currentMonth: %s\n", currentMonth)
-				fmt.Printf("tx month: %s\n", transactions[i].Timestamp.Month())
-				currentMonth = transactions[i].Timestamp.Month().String()
+	// loop over filteredTransaction. Otherwise it would grab transactions from years before the startYear
+	for i := len(filteredTransactions) - 1; i > -0; i-- {
+		if filteredTransactions[i].TransactType == "AffiliatePayout" && filteredTransactions[i].Timestamp.Year() >= startYear {
+
+			// first month will be empty, assign the first month here
+			if currentMonth == "" {
+				currentMonth = filteredTransactions[i].Timestamp.Month().String()
+			}
+
+			if currentMonth != filteredTransactions[i].Timestamp.Month().String() {
+				currentMonth = filteredTransactions[i].Timestamp.Month().String()
 				result.Btc = monthBTC.String()
 				result.Dollar = fmt.Sprintf("$%.2f", monthBTC.ToBTC()*bitcoinPrice)
-				stats.AddStat(*result)
-				result = new(Stat)
+				stats.AddStat(*result) // commit the previous Stat
+				result = new(Stat) // prepare new Stat for new month. Also reset MonthBTC and MonthDollar for next month
 				monthBTC = 0
 				monthDollar = 0.0
 			}
 
-			btc, _ := btcutil.NewAmount(float64(transactions[i].Amount) / 100000000)
-			result.Date = transactions[i].Timestamp.Month().String()
+			btc, _ := btcutil.NewAmount(float64(filteredTransactions[i].Amount) / 100000000)
+			result.Date = filteredTransactions[i].Timestamp.Month().String()
 			monthBTC += btc
-			monthDollar += btc.ToBTC()*bitcoinPrice
+			monthDollar += btc.ToBTC() * bitcoinPrice
 
 			totalBTC += btc
 			totalDollar += btc.ToBTC() * bitcoinPrice
@@ -112,7 +124,6 @@ func ReferralEarning(transactions []bitmexgo.Transaction) *Stats {
 	return stats
 }
 
-
 type Stat struct {
 	Date   string
 	Btc    string
@@ -121,8 +132,8 @@ type Stat struct {
 }
 
 type Stats struct {
-	Stat []Stat
-	TotalBtc string
+	Stat        []Stat
+	TotalBtc    string
 	TotalDollar string
 }
 
