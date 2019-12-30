@@ -120,16 +120,14 @@ func getMonthlyEarnings(s *Session) {
 		message := fmt.Sprintf("Failed to load wallet transactions: %s\n", err)
 		sendMessage(s, message)
 	}
-	bmex.ReferralEarning(tx)
+	message := ""
+	stats := bmex.ReferralEarning(tx)
+	for i := len(stats.Stat) - 1; i >= 0; i-- {
+		message += fmt.Sprintf("<pre>%s\t\t\t%s\n</pre>", stats.Stat[i].Date, stats.Stat[i].Dollar)
+	}
+	message += fmt.Sprintf("\n<pre>Total BTC: %s \t Total Dollar: %s</pre>",stats.TotalBtc, stats.TotalDollar)
 
-	//message := "<code>"
-	//stats := bmex.ReferralEarning(tx)
-	//for i := len(stats.Stat) - 1; i >= 0; i-- {
-	//	message += fmt.Sprintf("%s\t\t\t%s\n", stats.Stat[i].Date, stats.Stat[i].Dollar)
-	//}
-	//message += fmt.Sprintf("\nTotal BTC: %s \t Total Dollar: %s</code>",stats.TotalBtc, stats.TotalDollar)
-	//
-	//sendMessage(s, message)
+	sendMessage(s, message)
 }
 
 func getWeeklyEarnings(s *Session) {
