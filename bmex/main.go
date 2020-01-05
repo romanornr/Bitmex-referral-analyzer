@@ -15,37 +15,6 @@ var c config.Conf
 var apiKey string
 var apiSecret string
 
-func main() {
-
-	auth, apiClient := client.GetInstance()
-
-	// Call APIs without parameters by passing the auth context.
-	// e.g. getting exchange-wide turnover and volume statistics:
-	tx, _, err := apiClient.UserApi.UserGetWalletHistory(auth, nil)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	//var earned float64
-
-	//referralEarning(tx)
-	x := MonthEarned(7)
-	fmt.Println(x)
-	y := WeeklyEarnings(tx)
-	fmt.Println(y)
-
-	//for i := len(tx) - 1; i >= 0; i--{
-	//	year := tx[i].Timestamp.Year()
-	//	if tx[i].TransactType == "AffiliatePayout" && int64(year) == int64(c.Start_year) {
-	//		amount := float64(tx[i].Amount) / 100000000
-	//		earned += amount
-	//	}
-	//
-	//}
-	//fmt.Println(earned)
-
-}
-
 const BITMEXREFLINK = "https://www.bitmex.com/register/vhT2qm"
 
 // loads wallet history by using bitmex api
@@ -62,8 +31,8 @@ func LoadWalletHistory() (error, []bitmexgo.Transaction) {
 	return err, tx
 }
 
-var previousMonthEarning float64
-var monthlyTransactions [12][]bitmexgo.Transaction
+//var previousMonthEarning float64
+//var monthlyTransactions [12][]bitmexgo.Transaction
 
 func ReferralEarning(transactions []bitmexgo.Transaction) *Stats {
 
@@ -121,7 +90,6 @@ func ReferralEarning(transactions []bitmexgo.Transaction) *Stats {
 	stats.TotalDollar = fmt.Sprintf("$%.2f", totalDollar)
 	stats.TotalBtc = totalBTC.String()
 
-	fmt.Println(stats)
 	return stats
 }
 
@@ -176,15 +144,15 @@ func (s *Stats) AddStat(item Stat) []Stat {
 	return s.Stat
 }
 
-func MonthEarned(month int) float64 {
-	var earnedBTC float64
-	monthTransactions := monthlyTransactions[month-1]
-	for i := 0; i < len(monthTransactions); i++ {
-		amount := float64(monthTransactions[i].Amount) / 100000000
-		earnedBTC += amount
-	}
-	return earnedBTC
-}
+//func MonthEarned(month int) float64 {
+//	var earnedBTC float64
+//	monthTransactions := monthlyTransactions[month-1]
+//	for i := 0; i < len(monthTransactions); i++ {
+//		amount := float64(monthTransactions[i].Amount) / 100000000
+//		earnedBTC += amount
+//	}
+//	return earnedBTC
+//}
 
 type AffiliateStatus struct {
 	PrevPayout          string `json:"prevPayout"`
@@ -214,12 +182,12 @@ func Status() (AffiliateStatus, error) {
 	amountTotalCommission, _ := btcutil.NewAmount(float64(status.TotalComm) / 100000000)
 	amountPendingPayout, _ := btcutil.NewAmount(float64(status.PendingPayout) / 100000000)
 	affiliateStatus := AffiliateStatus{
-		PrevPayout:     amountPrevPayout.String(),
-		TotalReferrals: status.TotalReferrals,
-		TotalTurnover:  amountTotalTurnover.String(),
-		TotalComm:      amountTotalCommission.String(),
-		PendingPayout:  amountPendingPayout.String(),
-		PendingPayoutDollar: fmt.Sprintf("$%.2f", amountPendingPayout.ToBTC() * bitcoin.ToDollar()),
+		PrevPayout:          amountPrevPayout.String(),
+		TotalReferrals:      status.TotalReferrals,
+		TotalTurnover:       amountTotalTurnover.String(),
+		TotalComm:           amountTotalCommission.String(),
+		PendingPayout:       amountPendingPayout.String(),
+		PendingPayoutDollar: fmt.Sprintf("$%.2f", amountPendingPayout.ToBTC()*bitcoin.ToDollar()),
 	}
 	return affiliateStatus, nil
 }
