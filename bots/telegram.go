@@ -90,6 +90,7 @@ func (s *Session) Handle() {
 	m := map[string]interface{}{
 		"/week" + botUsername:   getWeeklyEarnings,
 		"/months" + botUsername: getMonthlyEarnings,
+		"/status" + botUsername: getAffiliateStatus,
 	}
 
 	if _, ok := m[s.command.Command]; ok {
@@ -125,7 +126,7 @@ func getMonthlyEarnings(s *Session) {
 	for i := len(stats.Stat) - 1; i >= 0; i-- {
 		message += fmt.Sprintf("<pre>%s\t\t\t%s\n</pre>", stats.Stat[i].Date, stats.Stat[i].Dollar)
 	}
-	message += fmt.Sprintf("\n<pre>Total BTC: %s \t Total Dollar: %s</pre>",stats.TotalBtc, stats.TotalDollar)
+	message += fmt.Sprintf("\n<pre>Total BTC: %s \t Dollar: %s</pre>",stats.TotalBtc, stats.TotalDollar)
 
 	sendMessage(s, message)
 }
@@ -137,14 +138,27 @@ func getWeeklyEarnings(s *Session) {
 		message := fmt.Sprintf("Failed to load wallet transactions: %s\n", err)
 		sendMessage(s, message)
 	}
-	message := "<code>"
+	message := ""
 	stats := bmex.WeeklyEarnings(tx)
 
 	for i := len(stats.Stat) - 1; i >= 0; i-- {
-		message += fmt.Sprintf("%s\t\t\t%s\n", stats.Stat[i].Date, stats.Stat[i].Dollar)
+		message += fmt.Sprintf("<pre>%s\t\t\t%s\n</pre>", stats.Stat[i].Date, stats.Stat[i].Dollar)
 	}
-	message += fmt.Sprintf("\nTotal BTC: %s \t Total Dollar: %s</code>",stats.TotalBtc, stats.TotalDollar)
+	message += fmt.Sprintf("\n<pre>Total BTC: %s \t Dollar: %s</pre>",stats.TotalBtc, stats.TotalDollar)
 
+	sendMessage(s, message)
+}
+
+func getAffiliateStatus(s *Session) {
+	status, err := bmex.Status()
+	if err != nil {
+		message := fmt.Sprintf("Failed to load wallet transactions: %s\n", err)
+		log.Printf(message)
+		sendMessage(s, message)
+	}
+
+	message := fmt.Sprintf("<code>Previous payout: %s\nTotal turnover: %s\nTotal referrals: %d\n\nPending payout: %s\t - %s</code>",
+		status.PrevPayout, status.TotalTurnover, status.TotalReferrals, status.PendingPayout, status.PendingPayoutDollar)
 	sendMessage(s, message)
 }
 

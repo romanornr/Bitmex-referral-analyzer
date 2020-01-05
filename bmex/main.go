@@ -8,6 +8,7 @@ import (
 	"github.com/romanornr/Bitmex-referral-analyzer/config"
 	"github.com/spf13/viper"
 	"github.com/zmxv/bitmexgo"
+	"log"
 )
 
 var c config.Conf
@@ -102,7 +103,7 @@ func ReferralEarning(transactions []bitmexgo.Transaction) *Stats {
 				result.Btc = monthBTC.String()
 				result.Dollar = fmt.Sprintf("$%.2f", monthBTC.ToBTC()*bitcoinPrice)
 				stats.AddStat(*result) // commit the previous Stat
-				result = new(Stat) // prepare new Stat for new month. Also reset MonthBTC and MonthDollar for next month
+				result = new(Stat)     // prepare new Stat for new month. Also reset MonthBTC and MonthDollar for next month
 				monthBTC = 0
 				monthDollar = 0.0
 			}
@@ -183,4 +184,37 @@ func MonthEarned(month int) float64 {
 		earnedBTC += amount
 	}
 	return earnedBTC
+}
+
+type AffiliateStatus struct {
+	PrevPayout          string `json:"prevPayout"`
+	PrevTurnover        string `json:"prevTurnover"`
+	TotalReferrals      int    `json:"totalReferrals"`
+	TotalTurnover       string `json:"totalTurnover"`
+	TotalComm           string `json:"totalComm"`
+	PendingPayout       string `json:"pendingPayout"`
+	PendingPayoutDollar string
+}
+
+func Status() (AffiliateStatus, error) {
+	auth, apiClient := client.GetInstance()
+	status, _, err := apiClient.UserApi.UserGetAffiliateStatus(auth)
+	if err != nil {
+		log.Printf("Error affiliate status: %s\n", err)
+		return AffiliateStatus{}, err
+	}
+
+	amountPrevPayout, _ := btcutil.NewAmount(float64(status.PrevPayout) / 100000000)
+	amountTotalTurnover, _ := btcutil.NewAmount(float64(status.TotalTurnover) / 100000000)
+	amountTotalCommission, _ := btcutil.NewAmount(float64(status.TotalComm) / 100000000)
+	amountPendingPayout, _ := btcutil.NewAmount(float64(status.PendingPayout) / 100000000)
+	affiliateStatus := AffiliateStatus{
+		PrevPayout:     amountPrevPayout.String(),
+		TotalReferrals: status.TotalReferrals,
+		TotalTurnover:  amountTotalTurnover.String(),
+		TotalComm:      amountTotalCommission.String(),
+		PendingPayout:  amountPendingPayout.String(),
+		PendingPayoutDollar: fmt.Sprintf("$%.2f", amountPendingPayout.ToBTC() * bitcoin.ToDollar()),
+	}
+	return affiliateStatus, nil
 }
