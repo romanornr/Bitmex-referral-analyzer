@@ -196,6 +196,11 @@ type AffiliateStatus struct {
 	PendingPayoutDollar string
 }
 
+// will send an affiliate status message like this:
+// Previous payout: 18.65300541 BTC
+// Total turnover: 152550.62037547 BTC
+// Total referrals: 468
+// Pending payout: 0.00321705 BTC  - $23.93
 func Status() (AffiliateStatus, error) {
 	auth, apiClient := client.GetInstance()
 	status, _, err := apiClient.UserApi.UserGetAffiliateStatus(auth)
