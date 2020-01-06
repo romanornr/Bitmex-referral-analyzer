@@ -5,15 +5,10 @@ import (
 	"github.com/btcsuite/btcutil"
 	"github.com/romanornr/Bitmex-referral-analyzer/bitcoin"
 	"github.com/romanornr/Bitmex-referral-analyzer/client"
-	"github.com/romanornr/Bitmex-referral-analyzer/config"
 	"github.com/spf13/viper"
 	"github.com/zmxv/bitmexgo"
 	"log"
 )
-
-var c config.Conf
-var apiKey string
-var apiSecret string
 
 const BITMEXREFLINK = "https://www.bitmex.com/register/vhT2qm"
 
@@ -30,9 +25,6 @@ func LoadWalletHistory() (error, []bitmexgo.Transaction) {
 	}
 	return err, tx
 }
-
-//var previousMonthEarning float64
-//var monthlyTransactions [12][]bitmexgo.Transaction
 
 func ReferralEarning(transactions []bitmexgo.Transaction) *Stats {
 
@@ -143,16 +135,6 @@ func (s *Stats) AddStat(item Stat) []Stat {
 	s.Stat = append(s.Stat, item)
 	return s.Stat
 }
-
-//func MonthEarned(month int) float64 {
-//	var earnedBTC float64
-//	monthTransactions := monthlyTransactions[month-1]
-//	for i := 0; i < len(monthTransactions); i++ {
-//		amount := float64(monthTransactions[i].Amount) / 100000000
-//		earnedBTC += amount
-//	}
-//	return earnedBTC
-//}
 
 type AffiliateStatus struct {
 	PrevPayout          string `json:"prevPayout"`
