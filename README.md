@@ -45,6 +45,10 @@ months - Show earnings per month
 
 status - Show total referrals and pending payout
 
+###### Screenshots
+![alt text](https://github.com/romanornr/Bitmex-referral-analyzer/blob/master/screenshots/telegram.png?raw=true)
+<br><br>
+
 ###### Ref shill
 Join to get that 10% Shitmex discount: https://www.bitmex.com/register/vhT2qm
 
