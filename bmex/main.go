@@ -83,26 +83,24 @@ func ReferralEarning(transactions []bitmexgo.Transaction) *Stats {
 		}
 	}
 
-	// calculate jan
-	var januaryEarningsBTC = 0
-	var d = 0.0
-	var b = btcutil.Amount(0)
+	// calculate January
+	// get the other months which don't include january and combine that
+	// total dollars and btc minus every other earned except january results in earnings January
+	// this calculation due some big / wrong logic which puts every month in the stats except January due to the reverse loop
+	var dollarJanuary = 0.0
+	var bitcoinsJanuary = btcutil.Amount(0)
 	for _, st := range stats.Stat {
-		d += st.Dollar
-		b += st.Btc
+		dollarJanuary += st.Dollar
+		bitcoinsJanuary += st.Btc
 	}
 
 	result.Date = "January"
-	result.Btc = totalBTC - b
-	result.Dollar = totalDollar - d
-
-	stats.AddStat(*result)
-	fmt.Println(januaryEarningsBTC)
+	result.Btc = totalBTC - bitcoinsJanuary
+	result.Dollar = totalDollar - dollarJanuary
+	stats.AddStat(*result) // push January stats
 
 	stats.TotalDollar = fmt.Sprintf("$%.2f", totalDollar)
 	stats.TotalBtc = totalBTC.String()
-
-	fmt.Println(stats.Stat)
 
 	return stats
 }
