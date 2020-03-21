@@ -124,7 +124,8 @@ func getMonthlyEarnings(s *Session) {
 	message := ""
 	stats := bmex.ReferralEarning(tx)
 	for i := len(stats.Stat) - 1; i >= 0; i-- {
-		message += fmt.Sprintf("<pre>%s\t\t\t%s\n</pre>", stats.Stat[i].Date, stats.Stat[i].Dollar)
+		dollar := fmt.Sprintf("$%.2f", stats.Stat[i].Dollar)
+		message += fmt.Sprintf("<pre>%s\t\t\t%s\n</pre>", stats.Stat[i].Date, dollar)
 	}
 	message += fmt.Sprintf("\n<pre>Total BTC: %s \t Dollar: %s</pre>",stats.TotalBtc, stats.TotalDollar)
 
@@ -142,7 +143,8 @@ func getWeeklyEarnings(s *Session) {
 	stats := bmex.WeeklyEarnings(tx)
 
 	for i := len(stats.Stat) - 1; i >= 0; i-- {
-		message += fmt.Sprintf("<pre>%s\t\t\t%s\n</pre>", stats.Stat[i].Date, stats.Stat[i].Dollar)
+		dollar := fmt.Sprintf("$%.2f", stats.Stat[i].Dollar)
+		message += fmt.Sprintf("<pre>%s\t\t\t%s\n</pre>", stats.Stat[i].Date, dollar)
 	}
 	message += fmt.Sprintf("\n<pre>Total BTC: %s \t Dollar: %s</pre>",stats.TotalBtc, stats.TotalDollar)
 
