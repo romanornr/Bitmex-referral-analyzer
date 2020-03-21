@@ -59,10 +59,14 @@ func ReferralEarning(transactions []bitmexgo.Transaction) *Stats {
 				currentMonth = filteredTransactions[i].Timestamp.Month().String()
 			}
 
+			// detect new month
 			if currentMonth != filteredTransactions[i].Timestamp.Month().String() {
+				//fmt.Printf("current month: %s  |  filter: %s \n", currentMonth, filteredTransactions[i].Timestamp.Month().String())
 				currentMonth = filteredTransactions[i].Timestamp.Month().String()
-				result.Btc = monthBTC.String()
-				result.Dollar = fmt.Sprintf("$%.2f", monthBTC.ToBTC()*bitcoinPrice)
+				//result.Btc = monthBTC.String()
+				result.Btc = monthBTC
+				//result.Dollar = fmt.Sprintf("$%.2f", monthBTC.ToBTC()*bitcoinPrice)
+				result.Dollar = monthBTC.ToBTC() * bitcoinPrice
 				stats.AddStat(*result) // commit the previous Stat
 				result = new(Stat)     // prepare new Stat for new month. Also reset MonthBTC and MonthDollar for next month
 				monthBTC = 0
@@ -79,16 +83,34 @@ func ReferralEarning(transactions []bitmexgo.Transaction) *Stats {
 		}
 	}
 
+	// calculate jan
+	var januaryEarningsBTC = 0
+	var d = 0.0
+	var b = btcutil.Amount(0)
+	for _, st := range stats.Stat {
+		d += st.Dollar
+		b += st.Btc
+	}
+
+	result.Date = "January"
+	result.Btc = totalBTC - b
+	result.Dollar = totalDollar - d
+
+	stats.AddStat(*result)
+	fmt.Println(januaryEarningsBTC)
+
 	stats.TotalDollar = fmt.Sprintf("$%.2f", totalDollar)
 	stats.TotalBtc = totalBTC.String()
+
+	fmt.Println(stats.Stat)
 
 	return stats
 }
 
 type Stat struct {
 	Date   string
-	Btc    string
-	Dollar string
+	Btc    btcutil.Amount
+	Dollar float64
 	Change string
 }
 
@@ -112,9 +134,11 @@ func WeeklyEarnings(transactions []bitmexgo.Transaction) *Stats {
 			result := new(Stat)
 			btc, _ := btcutil.NewAmount(float64(transactions[i].Amount) / 100000000)
 			result.Date = transactions[i].Timestamp.Weekday().String()
-			result.Btc = btc.String()
+			//result.Btc = btc.String()
+			result.Btc = btc
 
-			result.Dollar = fmt.Sprintf("$%.2f", btc.ToBTC()*bitcoinPrice)
+			//result.Dollar = fmt.Sprintf("$%.2f", btc.ToBTC()*bitcoinPrice)
+			result.Dollar = btc.ToBTC() * bitcoinPrice
 			stats.AddStat(*result)
 
 			totalBTC += btc
