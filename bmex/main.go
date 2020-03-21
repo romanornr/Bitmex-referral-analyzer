@@ -61,11 +61,8 @@ func ReferralEarning(transactions []bitmexgo.Transaction) *Stats {
 
 			// detect new month
 			if currentMonth != filteredTransactions[i].Timestamp.Month().String() {
-				//fmt.Printf("current month: %s  |  filter: %s \n", currentMonth, filteredTransactions[i].Timestamp.Month().String())
 				currentMonth = filteredTransactions[i].Timestamp.Month().String()
-				//result.Btc = monthBTC.String()
 				result.Btc = monthBTC
-				//result.Dollar = fmt.Sprintf("$%.2f", monthBTC.ToBTC()*bitcoinPrice)
 				result.Dollar = monthBTC.ToBTC() * bitcoinPrice
 				stats.AddStat(*result) // commit the previous Stat
 				result = new(Stat)     // prepare new Stat for new month. Also reset MonthBTC and MonthDollar for next month
@@ -132,10 +129,8 @@ func WeeklyEarnings(transactions []bitmexgo.Transaction) *Stats {
 			result := new(Stat)
 			btc, _ := btcutil.NewAmount(float64(transactions[i].Amount) / 100000000)
 			result.Date = transactions[i].Timestamp.Weekday().String()
-			//result.Btc = btc.String()
 			result.Btc = btc
 
-			//result.Dollar = fmt.Sprintf("$%.2f", btc.ToBTC()*bitcoinPrice)
 			result.Dollar = btc.ToBTC() * bitcoinPrice
 			stats.AddStat(*result)
 
