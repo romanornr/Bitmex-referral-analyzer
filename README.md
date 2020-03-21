@@ -39,6 +39,9 @@ Your wallet history csv file should be saved in the same folder as the program.
 ![alt text](https://github.com/romanornr/Bitmex-referral-analyzer/blob/master/screenshots/screenshot.png?raw=true)
 
 ##### Method 2: Telegram commands
+
+``Edit config/config.yml and put in the right API keys.``
+
 week - Show earnings this week
 
 months - Show earnings per month
